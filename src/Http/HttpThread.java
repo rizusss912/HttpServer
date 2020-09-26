@@ -11,11 +11,12 @@ import java.net.Socket;
  * Для заупуска небоходимо вызвать метод {@link HttpThread#run()}
  * @author Vadim Koshechkin
  */
-public class HttpThread extends HttpServer implements Runnable {
-    private final Socket socket;
-
+public class HttpThread extends HttpServer implements Runnable{
+    private ServerConfig config;
+    private Socket socket;
     HttpThread(ServerConfig config, Socket socket){
         super(config);
+        this.config = config;
         this.socket = socket;
         this.setDaemon(true);
     }
@@ -26,17 +27,18 @@ public class HttpThread extends HttpServer implements Runnable {
     public void run() {
         // для подключившегося клиента открываем потоки
         // чтения и записи
-        try		(
+        try (
                 InputStream input = socket.getInputStream();
                 OutputStream output = socket.getOutputStream();
-                )
+            )
         {
             HttpQuestion question = new HttpQuestion(input);
             HttpAnswer answer = new HttpAnswer(question);
             output.write(answer.getMessageToByte());
             output.flush();
-            socket.close();
+
         } catch (IOException e) {
+            e.printStackTrace();
             System.out.println("ERROR: " + e.toString());
         }
     }

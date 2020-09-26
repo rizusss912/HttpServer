@@ -10,7 +10,7 @@ public class MainClass {
     public static void main(String[] args) {
 
         ServerConfig config = new ServerConfig(
-                8080,
+                8081,
                 Paths.get(System.getProperty("user.dir") + File.separator + "src" + File.separator + "resources")
         );
         HttpServer server = new HttpServer(config);
