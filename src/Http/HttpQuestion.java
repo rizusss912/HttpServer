@@ -32,19 +32,37 @@ public class HttpQuestion{
         }
     }
 
+    /**
+     * Возвращает главный запрос
+     */
     public String getMain(){
         return mainQuestion;
     }
+    /**
+     * Возвращает тип запроса
+     */
     public String getType(){
         String s = mainQuestion.split("/", 2)[0];
         return s;
     }
+    /**
+     * Возвращает название протокола
+     */
     public String getProtocol(){
         String s = mainQuestion.split("/", 3)[1];
         return s;
     }
+    /**
+     * Возвращает версию протокола
+     */
     public String getVersion(){
         String s = mainQuestion.split("/", 3)[2];
         return s;
+    }
+    /**
+     * Возвращает мапу запросов
+     */
+    public HashMap getMap(){
+        return questions;
     }
 }
