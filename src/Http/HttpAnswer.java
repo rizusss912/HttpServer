@@ -1,6 +1,5 @@
 package Http;
 
-import java.io.InputStream;
 
 public class HttpAnswer {
     private HttpQuestion question;

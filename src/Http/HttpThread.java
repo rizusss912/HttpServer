@@ -5,14 +5,24 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
-public class HttpThread extends Thread {
+/**
+ * Поток для обработки одного http-запроса.
+ * Читает запрос, обрабатыает его и отправляет ответ.
+ * Для заупуска небоходимо вызвать метод {@link HttpThread#run()}
+ * @author Vadim Koshechkin
+ */
+public class HttpThread extends HttpServer implements Runnable {
     private final Socket socket;
-    private final ServerConfig config;
+
     HttpThread(ServerConfig config, Socket socket){
-        this.config = config;
+        super(config);
         this.socket = socket;
         this.setDaemon(true);
     }
+
+    /**
+     * Обрабатывает http-запрос
+     */
     public void run() {
         // для подключившегося клиента открываем потоки
         // чтения и записи
@@ -25,7 +35,7 @@ public class HttpThread extends Thread {
             HttpAnswer answer = new HttpAnswer(question);
             output.write(answer.getMessageToByte());
             output.flush();
-
+            socket.close();
         } catch (IOException e) {
             System.out.println("ERROR: " + e.toString());
         }
