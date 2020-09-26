@@ -71,4 +71,8 @@ public class HttpQuestion{
     public HashMap getMap(){
         return questions;
     }
+    public String getHeader(String header){
+    return questions.get(header);
+    }
+
 }
