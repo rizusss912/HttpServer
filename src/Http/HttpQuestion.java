@@ -10,6 +10,7 @@ import java.util.HashMap;
 /**
  * Обрабатывает и хранит HTTP запрос, а так же предоставляет функционал для удобной работы с ним.
  * В конструктор передаётся поток HTTP запроса.
+ * @author KiT
  */
 public class HttpQuestion{
 
@@ -33,34 +34,39 @@ public class HttpQuestion{
     }
 
     /**
-     * Возвращает главный запрос
+     * возвращает главную строку
+     * @return главная строка
      */
     public String getMain(){
         return mainQuestion;
     }
     /**
-     * Возвращает тип запроса
+     * возвращает тип запроса
+     * @return тип запроса
      */
     public String getType(){
         String s = mainQuestion.split("/", 2)[0];
         return s;
     }
     /**
-     * Возвращает название протокола
+     * возвращает название протокола
+     * @return название протокола
      */
     public String getProtocol(){
         String s = mainQuestion.split("/", 3)[1];
         return s;
     }
     /**
-     * Возвращает версию протокола
+     * возвращает версию протокола
+     * @return весрия протокола
      */
     public String getVersion(){
         String s = mainQuestion.split("/", 3)[2];
         return s;
     }
     /**
-     * Возвращает мапу запросов
+     * возвращает мапу запросов
+     * @return мапа запросов
      */
     public HashMap getMap(){
         return questions;
