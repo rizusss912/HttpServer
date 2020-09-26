@@ -26,8 +26,18 @@ public class HttpQuestion{
                 data.add(a);
                 //System.out.println(a);
             }
-            datable.put
+           // datable.put
             System.out.println(data.get(1));
+            System.out.println(data.get(2));
+            System.out.println(data.get(3));
+            System.out.println(data.get(4));
+            System.out.println(data.get(5));
+            System.out.println(data.get(6));
+            System.out.println(data.get(7));
+            System.out.println(data.get(8));
+            System.out.println(data.get(9));
+            System.out.println(data.get(10));
+            System.out.println(data.get(11));
         }
     /*public Array getData(Array data){
             return data;
