@@ -109,4 +109,5 @@ public class HttpAnswer {
     public String getCode(){
         return code;
     }
+
 }
