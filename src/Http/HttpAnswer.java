@@ -1,6 +1,5 @@
 package Http;
 
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.HashMap;
@@ -110,6 +109,4 @@ public class HttpAnswer {
     public String getCode(){
         return code;
     }
-
-
 }
