@@ -2,18 +2,41 @@ package Http;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Stream;
 
 public class HttpAnswer {
-    private byte[] body;
-    private File file;
-    private HashMap<String, String> answers = new HashMap<>();
-    private String protocol;
-    private String version;
-    private int code;
-    public byte[] getMessageToByte(){
-        byte[] bytes = new byte[0];
-        return bytes;
+    private byte[] body = null;
+    private File file = null;
+    private HashMap<String, String> headers = new HashMap<>();
+    private String protocol = "HTTP";
+    private String version = "1.1";
+    private int code = 501;
+    private String message = "Not Implemented";
+
+    /**
+     * Отправляет сообщение
+     * @param out поток для отправки сообщения
+     * @throws IOException проблемы с потоком
+     */
+    public void pushMessage(OutputStream out) throws IOException {
+        out.write((this.getProtocol() + "/" + this.getProtocolVersion() + " " + this.getCode() + " " + this.getMessage() + "\n").getBytes());
+        for (Map.Entry<String, String> entry : headers.entrySet()){
+            out.write((entry.getKey() + ": " + entry.getValue() + "\n").getBytes());
+        }
+        if ( !(body == null && file == null) ){
+            out.write("\n".getBytes());
+            if(file != null){
+                Files.copy(file.toPath(), out);
+            } else{
+                out.write(body);
+            }
+        }
+        out.flush();
     }
 
     /**
@@ -26,7 +49,7 @@ public class HttpAnswer {
      * Устанавливает тело запроса в виде файла
      */
     public void setBody(File file){
-        this.file=file;
+        this.file = file;
     }
     /**
      * возвращает массив байтов
@@ -48,16 +71,16 @@ public class HttpAnswer {
      * @param key заголовок
      * @param value значение
      */
-    public void setAnswers(String key, String value){
-        answers.put(key, value);
+    public void setHeader(String key, String value){
+        headers.put(key, value);
     }
 
     /**
      * Возвращает HashMap ответов сервера
      * @return HashMap ответов сервера
      */
-    public HashMap getMap(){
-        return answers;
+    public HashMap getHeaders(){
+        return headers;
     }
 
     /**
@@ -65,7 +88,7 @@ public class HttpAnswer {
      * @param key заголовок
      * @return значение заголовка
      */
-    public String getAnswer(String key){return answers.get(key);}
+    public String getHeaders(String key){return headers.get(key);}
 
     /**
      * Устанавливает тип протокол
@@ -84,12 +107,12 @@ public class HttpAnswer {
      * Устанавливает версию протокола
      * @param ver версия протокола
      */
-    public void setVersion(String ver){ this.version = ver;}
+    public void setProtocolVersion(String ver){ this.version = ver;}
     /**
      * возвращает версию протокола
      * @return весрия протокола
      */
-    public String getVersion(){
+    public String getProtocolVersion(){
         return version;
     }
     /**
@@ -108,5 +131,21 @@ public class HttpAnswer {
      */
     public int getCode(){
         return code;
+    }
+
+    /**
+     * Устанавливает сообщение ответа
+     * @param message сообщение
+     */
+    public void setMessage(String message){
+        this.message = message;
+    }
+
+    /**
+     * Возвращает сообение ответа
+     * @return сообение
+     */
+    public String getMessage(){
+        return message;
     }
 }

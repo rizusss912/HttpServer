@@ -24,14 +24,14 @@ public class HttpServer extends Thread{
     public void run(){
         try (ServerSocket serverSocket = new ServerSocket(config.getPort())) {
             System.out.println("Server started!");
-            while (!stop) {
+            while (true) {
                 // ожидаем подключения
                 Socket socket = serverSocket.accept();
                 HttpThread request = new HttpThread(config, socket);
                 request.start();
 
             }
-            System.out.println("Server close!");
+            //System.out.println("Server close!");
         }
         catch (IOException ignored) {
         }

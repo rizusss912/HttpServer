@@ -1,5 +1,6 @@
 package Http;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -37,41 +38,61 @@ public class HttpThread extends HttpServer implements Runnable{
         {
             question = new HttpQuestion(input);
             answer = new HttpAnswer();
-            switch (question.getType()){
-                case GET:
-                    goToGet();
-                    break;
-                case POST:
-                    goToPost();
-                    break;
-                case PUT:
-                    break;
-                case HEAD:
-                    break;
-                case PATCH:
-                    break;
-                case TRACE:
-                    break;
-                case DELETE:
-                    break;
-                case CONNECT:
-                    break;
-                case OPTIONS:
-                    break;
-                default:
-                    throw new Exception("unknown request type");
-            }
-            output.write(answer.getMessageToByte());
-            output.flush();
+            answer.setProtocol(question.getProtocol());
+            answer.setProtocolVersion(question.getProtocolVersion());
+            searchFile();
+            answer.pushMessage(output);
 
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("ERROR: " + e.toString());
         }
+        try {
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
-    void goToGet(){
-    }
-    void goToPost(){
 
+        /**
+         * Обрабатывает запрос на файл сервера
+         */
+    private void searchFile() throws Exception {
+        File searchFile = new File(config.getResourcesPath().toString() + question.getUrl().replace("/", "\\"));
+        if (searchFile.getName().indexOf(".") == -1){
+            searchFile = defaultFile(searchFile);
+        }
+        if (searchFile != null && searchFile.exists()){
+            answer.setCode(200);
+            answer.setMessage("OK");
+            answer.setBody(searchFile);
+        } else {
+            answer.setCode(404);
+            answer.setMessage("Not Found");
+        }
     }
+
+        /**
+         * Вазвращает дефолтный файл из директории или null, если такой файл не найден
+         * @param dir директория
+         * @return файл в директории
+         */
+        private File defaultFile(File dir) {
+            File searchFile = null;
+            if (question.getUrl().equals("/")) {
+                for (File file : dir.listFiles()) {
+                    if (file.getName().equals("index.html")) {
+                        searchFile = file;
+                    }
+                }
+                if (searchFile == null) {
+                    for (File file : dir.listFiles()) {
+                        if (file.getName().indexOf(".html") != -1) {
+                            searchFile = file;
+                        }
+                    }
+                }
+            }
+            return searchFile;
+        }
 }

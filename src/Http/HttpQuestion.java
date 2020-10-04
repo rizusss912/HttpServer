@@ -15,60 +15,82 @@ import java.util.HashMap;
     */
 public class HttpQuestion{
 
-    private HashMap<String, String> questions = new HashMap<>();
-    private String mainQuestion;
-    HttpQuestion(InputStream input) throws IOException {
+    private HashMap<String, String> headers = new HashMap<>();
+    private final RequestTypes type;
+    private final String url;
+    private final String protocol;
+    private final String protocolVersion;
+    private final byte[] body;
+
+        HttpQuestion(InputStream input) throws Exception {
         BufferedReader message = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8));
         // ждем первой строки запроса
         while (!message.ready()) ;
         // считываем и печатаем все что было отправлено клиентом
         //Считываем главную строку
-        mainQuestion=message.readLine();
+        String[] mainQuestion = message.readLine().split(" ");
+        type = RequestTypes.valueOf(mainQuestion[0]);
+        url = mainQuestion[1];
+        protocol = mainQuestion[2].split("/")[0];
+        protocolVersion = mainQuestion[2].split("/")[1];
+        String a = null;
         // читаем все заголовки
-        while (message.ready()) {
-            String a = message.readLine();
-            String[] part = a.split(":");
-            if(part.length>1){
-                questions.put(part[0], part[1]);
-
+        while (message.ready() || "\n".equals(a)) {
+            a = message.readLine();
+            String[] part = a.split(": ");
+            if( part.length > 1){
+                headers.put(part[0], part[1]);
             }
+        }
+        if (a.equals("\n")) {
+            body = input.readAllBytes();
+        } else {
+            body = null;
         }
     }
 
     /**
-     * возвращает главную строку
+     * возвращает главную строку запроса
      * @return главная строка
      */
     public String getMain(){
-        return mainQuestion;
+        return type + " " + url + " " + protocol + "/" + protocolVersion;
     }
     /**
      * возвращает тип запроса
      * @return тип запроса
      */
     public RequestTypes getType(){
-        return RequestTypes.valueOf(mainQuestion.split("/", 2)[0].replace(" ",""));
+        return type;
+    }
+
+        /**
+         * Возарашает url запроса
+         * @return url
+         */
+    public String getUrl(){
+        return url;
     }
     /**
      * возвращает название протокола
      * @return название протокола
      */
     public String getProtocol(){
-        return mainQuestion.split("/", 3)[1];
+        return protocol;
     }
     /**
      * возвращает версию протокола
      * @return весрия протокола
      */
-    public String getVersion(){
-        return mainQuestion.split("/", 3)[2];
+    public String getProtocolVersion(){
+        return protocolVersion;
     }
     /**
      * возвращает HashMap запросов
      * @return HashMap запросов
      */
-    public HashMap getMap(){
-        return questions;
+    public HashMap getHeaders(){
+        return headers;
     }
 
     /**
@@ -77,6 +99,14 @@ public class HttpQuestion{
      * @return значение заголовка
      */
     public String getHeader(String header){
-    return questions.get(header);
+    return headers.get(header);
+    }
+
+        /**
+         *  Возвразает тело запроса или null, если тела нет
+         * @return тело запроса
+         */
+    public byte[] getBody() {
+        return body;
     }
 }
